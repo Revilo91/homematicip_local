@@ -48,6 +48,9 @@ from .generic_entity import AioHomematicGenericEntity, AioHomematicGenericRestor
 
 _LOGGER = logging.getLogger(__name__)
 
+# Track if extended services have been registered
+_EXTENDED_SERVICES_REGISTERED = False
+
 ATTR_OPTIMUM_START_STOP: Final = "optimum_start_stop"
 ATTR_TEMPERATURE_OFFSET: Final = "temperature_offset"
 
@@ -82,6 +85,8 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the Homematic(IP) Local for OpenCCU climate platform."""
+    global _EXTENDED_SERVICES_REGISTERED
+    
     control_unit: ControlUnit = entry.runtime_data
     
     # Check if linked switches feature is enabled
@@ -91,17 +96,11 @@ async def async_setup_entry(
     )
     
     # Lazily import extended class and register service if enabled
-    _extended_services_registered = False
-    
-    if enable_linked_switches:
-        from .climate_extended import AioHomematicClimateWithLinkedSwitches
-        
-        # Register extended services only once
-        if not _extended_services_registered:
-            from . import services as hm_services
-            if hasattr(hm_services, 'async_register_climate_extended_services'):
-                await hm_services.async_register_climate_extended_services(hass)
-                _extended_services_registered = True
+    if enable_linked_switches and not _EXTENDED_SERVICES_REGISTERED:
+        from . import services as hm_services
+        if hasattr(hm_services, 'async_register_climate_extended_services'):
+            await hm_services.async_register_climate_extended_services(hass)
+            _EXTENDED_SERVICES_REGISTERED = True
 
     @callback
     def async_add_climate(data_points: tuple[BaseCustomDpClimate, ...]) -> None:
