@@ -320,14 +320,14 @@ class TestAioHomematicClimateWithLinkedSwitches:
             data_point=mock_data_point,
         )
         
-        # Mock async_write_ha_state
-        entity.async_write_ha_state = MagicMock()
+        # Mock async_schedule_update_ha_state
+        entity.async_schedule_update_ha_state = MagicMock()
         
         with patch.object(entity, "_data_point", mock_data_point):
             await entity.async_reload_linked_switches()
         
         assert len(entity._linked_switches) == 1
-        assert entity.async_write_ha_state.called
+        assert entity.async_schedule_update_ha_state.called
 
     @pytest.mark.asyncio
     async def test_unregister_callbacks(

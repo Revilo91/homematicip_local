@@ -130,7 +130,7 @@ class AioHomematicClimateWithLinkedSwitches(AioHomematicClimate):
                     self.name,
                 )
                 # Trigger entity update
-                self.async_write_ha_state()
+                self.async_schedule_update_ha_state()
         
         return _switch_state_changed
 
@@ -160,7 +160,7 @@ class AioHomematicClimateWithLinkedSwitches(AioHomematicClimate):
         _LOGGER.info("Reloading linked switches for climate entity %s", self.name)
         await self._async_unregister_switch_callbacks()
         await self._async_load_linked_switches()
-        self.async_write_ha_state()
+        self.async_schedule_update_ha_state()
 
     @property
     def hvac_action(self) -> HVACAction | None:
