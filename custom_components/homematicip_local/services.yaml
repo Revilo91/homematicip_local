@@ -747,3 +747,9 @@ update_device_firmware_data:
       selector:
         config_entry:
           integration: homematicip_local
+
+reload_linked_switches:
+  target:
+    entity:
+      domain: climate
+      integration: homematicip_local
