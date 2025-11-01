@@ -195,6 +195,7 @@ _SENSOR_DESCRIPTIONS_BY_PARAM: Mapping[str | tuple[str, ...], EntityDescription]
         entity_registry_enabled_default=False,
         native_unit_of_measurement=UnitOfTemperature.KELVIN,
         state_class=SensorStateClass.MEASUREMENT,
+        translation_key="dew_point_spread",
     ),
     ("ACTIVITY_STATE", "DIRECTION"): HmSensorEntityDescription(
         key="DIRECTION",
@@ -225,6 +226,7 @@ _SENSOR_DESCRIPTIONS_BY_PARAM: Mapping[str | tuple[str, ...], EntityDescription]
         native_unit_of_measurement=KILOJOULS_PERKILOGRAM,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:fire",
+        translation_key="enthalpy",
     ),
     "FILLING_LEVEL": HmSensorEntityDescription(
         key="FILLING_LEVEL",
@@ -390,12 +392,21 @@ _SENSOR_DESCRIPTIONS_BY_PARAM: Mapping[str | tuple[str, ...], EntityDescription]
         native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    ("APPARENT_TEMPERATURE", "FROST_POINT"): HmSensorEntityDescription(
+    "APPARENT_TEMPERATURE": HmSensorEntityDescription(
         key="APPARENT_TEMPERATURE",
         device_class=SensorDeviceClass.TEMPERATURE,
         entity_registry_enabled_default=False,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         state_class=SensorStateClass.MEASUREMENT,
+        translation_key="apparent_temperature",
+    ),
+    "FROST_POINT": HmSensorEntityDescription(
+        key="FROST_POINT",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        entity_registry_enabled_default=False,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        state_class=SensorStateClass.MEASUREMENT,
+        translation_key="frost_point",
     ),
     ("ACTUAL_TEMPERATURE", "TEMPERATURE"): HmSensorEntityDescription(
         key="TEMPERATURE",
@@ -424,6 +435,7 @@ _SENSOR_DESCRIPTIONS_BY_PARAM: Mapping[str | tuple[str, ...], EntityDescription]
         entity_registry_enabled_default=False,
         native_unit_of_measurement=CONCENTRATION_GRAMS_PER_CUBIC_METER,
         state_class=SensorStateClass.MEASUREMENT,
+        translation_key="vapor_concentration",
     ),
     "VOLTAGE": HmSensorEntityDescription(
         key="VOLTAGE",
