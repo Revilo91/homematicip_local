@@ -42,6 +42,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import HomematicConfigEntry
+from .const import CONF_ENABLE_CLIMATE_LINKED_SWITCHES
 from .control_unit import ControlUnit, signal_new_data_point
 from .generic_entity import AioHomematicGenericEntity, AioHomematicGenericRestoreEntity
 
@@ -82,19 +83,50 @@ async def async_setup_entry(
 ) -> None:
     """Set up the Homematic(IP) Local for OpenCCU climate platform."""
     control_unit: ControlUnit = entry.runtime_data
+    
+    # Check if linked switches feature is enabled
+    enable_linked_switches = entry.options.get(
+        CONF_ENABLE_CLIMATE_LINKED_SWITCHES,
+        entry.data.get(CONF_ENABLE_CLIMATE_LINKED_SWITCHES, False),
+    )
+    
+    # Lazily import extended class and register service if enabled
+    _extended_services_registered = False
+    
+    if enable_linked_switches:
+        from .climate_extended import AioHomematicClimateWithLinkedSwitches
+        
+        # Register extended services only once
+        if not _extended_services_registered:
+            from . import services as hm_services
+            if hasattr(hm_services, 'async_register_climate_extended_services'):
+                await hm_services.async_register_climate_extended_services(hass)
+                _extended_services_registered = True
 
     @callback
     def async_add_climate(data_points: tuple[BaseCustomDpClimate, ...]) -> None:
         """Add climate from Homematic(IP) Local for OpenCCU."""
         _LOGGER.debug("ASYNC_ADD_CLIMATE: Adding %i data points", len(data_points))
 
-        if entities := [
-            AioHomematicClimate(
-                control_unit=control_unit,
-                data_point=data_point,
-            )
-            for data_point in data_points
-        ]:
+        if enable_linked_switches:
+            from .climate_extended import AioHomematicClimateWithLinkedSwitches
+            entities = [
+                AioHomematicClimateWithLinkedSwitches(
+                    control_unit=control_unit,
+                    data_point=data_point,
+                )
+                for data_point in data_points
+            ]
+        else:
+            entities = [
+                AioHomematicClimate(
+                    control_unit=control_unit,
+                    data_point=data_point,
+                )
+                for data_point in data_points
+            ]
+        
+        if entities:
             async_add_entities(entities)
 
     entry.async_on_unload(

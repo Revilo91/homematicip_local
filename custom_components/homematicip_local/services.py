@@ -644,6 +644,18 @@ async def async_setup_services(hass: HomeAssistant) -> None:
     )
 
 
+async def async_register_climate_extended_services(hass: HomeAssistant) -> None:
+    """Register climate extended services (called lazily when feature is enabled)."""
+    async_register_platform_entity_service(
+        hass=hass,
+        service_domain=DOMAIN,
+        service_name=HmipLocalServices.RELOAD_LINKED_SWITCHES,
+        entity_domain=CLIMATE_DOMAIN,
+        schema={},
+        func="async_reload_linked_switches",
+    )
+
+
 async def async_unload_services(hass: HomeAssistant) -> None:
     """Unload Homematic(IP) Local for OpenCCU services."""
     if len(async_get_loaded_config_entries(hass=hass)) > 0:
